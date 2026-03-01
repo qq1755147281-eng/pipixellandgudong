@@ -1,0 +1,991 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PI 像素领地</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- GSAP 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8A2BE2', // 紫色
+                        secondary: '#FFD700', // 黄色
+                        dark: '#121212',
+                        light: '#f8f9fa'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        pixel: ['"Press Start 2P"', 'monospace']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        glow: {
+                            '0%': { textShadow: '0 0 5px #fff, 0 0 10px #fff, 0 0 15px #8A2BE2, 0 0 20px #8A2BE2' },
+                            '100%': { textShadow: '0 0 10px #fff, 0 0 20px #fff, 0 0 30px #FFD700, 0 0 40px #FFD700' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            }
+            .text-shadow-glow {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #8A2BE2, 0 0 20px #8A2BE2;
+            }
+            .text-shadow-glow-yellow {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #FFD700, 0 0 20px #FFD700;
+            }
+            .btn-glow {
+                box-shadow: 0 0 5px theme('colors.primary'), 0 0 10px theme('colors.primary');
+            }
+            .btn-glow:hover {
+                box-shadow: 0 0 10px theme('colors.primary'), 0 0 20px theme('colors.primary'), 0 0 30px theme('colors.primary');
+            }
+            .btn-glow-yellow {
+                box-shadow: 0 0 5px theme('colors.secondary'), 0 0 10px theme('colors.secondary');
+            }
+            .btn-glow-yellow:hover {
+                box-shadow: 0 0 10px theme('colors.secondary'), 0 0 20px theme('colors.secondary'), 0 0 30px theme('colors.secondary');
+            }
+            .modal-backdrop {
+                backdrop-filter: blur(5px);
+                background-color: rgba(10, 10, 10, 0.7);
+            }
+            .grid-lines {
+                background-size: 40px 40px;
+                background-image: 
+                    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            }
+        }
+    </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 50%, #FFD700 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .meteor {
+            position: absolute;
+            background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+            height: 2px;
+            width: 150px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5);
+            animation: meteor var(--duration) linear infinite;
+            opacity: 0;
+            z-index: 2;
+        }
+        
+        @keyframes meteorDown {
+            0% {
+                transform: translateX(-150px) translateY(-150px) rotate(45deg);
+                opacity: 0;
+                box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            }
+            10% {
+                opacity: 1;
+                box-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8);
+            }
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 40px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5);
+            }
+            70% {
+                opacity: 0.8;
+                box-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8);
+            }
+            90% {
+                opacity: 0.5;
+                box-shadow: 0 0 10px rgba(255,255,255,0.8);
+            }
+            100% {
+                transform: translateX(calc(100vw + 150px)) translateY(calc(100vh + 150px)) rotate(45deg);
+                opacity: 0;
+                box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            }
+        }
+        
+        @keyframes meteorUp {
+            0% {
+                transform: translateX(calc(100vw + 150px)) translateY(calc(100vh + 150px)) rotate(-135deg);
+                opacity: 0;
+                box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            }
+            10% {
+                opacity: 1;
+                box-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8);
+            }
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 20px rgba(255,255,255,1), 0 0 40px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5);
+            }
+            70% {
+                opacity: 0.8;
+                box-shadow: 0 0 15px rgba(255,255,255,1), 0 0 30px rgba(255,255,255,0.8);
+            }
+            90% {
+                opacity: 0.5;
+                box-shadow: 0 0 10px rgba(255,255,255,0.8);
+            }
+            100% {
+                transform: translateX(-150px) translateY(-150px) rotate(-135deg);
+                opacity: 0;
+                box-shadow: 0 0 5px rgba(255,255,255,0.5);
+            }
+        }
+        
+        .grid-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .grid-line {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            animation: gridFlicker 4s ease-in-out infinite;
+        }
+        
+        .grid-line-horizontal {
+            width: 100%;
+            height: 1px;
+        }
+        
+        .grid-line-vertical {
+            width: 1px;
+            height: 100%;
+        }
+        
+        @keyframes gridFlicker {
+            0%, 75% { 
+                opacity: 1;
+                box-shadow: 0 0 8px rgba(255, 255, 255, 1);
+            }
+            80%, 85% { 
+                opacity: 0.1;
+                box-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
+            }
+            90%, 100% { 
+                opacity: 1;
+                box-shadow: 0 0 8px rgba(255, 255, 255, 1);
+            }
+        }
+        
+        .title {
+            font-family: 'Press Start 2P', monospace;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #8A2BE2, 0 0 20px #8A2BE2;
+            }
+            100% {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #FFD700, 0 0 40px #FFD700;
+            }
+        }
+        
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .btn:hover:before {
+            left: 100%;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: relative;
+            margin: 10% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9) 0%, rgba(75, 0, 130, 0.9) 100%);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            color: #FFD700;
+            transform: scale(1.2);
+        }
+        
+        .typing-effect::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+        
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* 滚动公告栏动画 */
+        .marquee-content {
+            animation: marquee 30s linear infinite;
+        }
+        
+        @keyframes marquee {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start pt-8 md:pt-16 relative z-10">
+    <!-- 星空背景 -->
+    <div class="stars" id="stars" style="z-index: 1;"></div>
+    
+    <!-- 流星雨效果 -->
+    <div class="stars" id="meteors" style="z-index: 2;"></div>
+    
+    <!-- 棋盘格线条 -->
+    <div class="grid-container" id="gridContainer" style="z-index: 1;"></div>
+    
+    <!-- 主标题 -->
+    <h1 class="title text-4xl md:text-6xl mb-6 animate-float" id="mainTitle">PI 像素领地</h1>
+    
+    <!-- 音频元素 -->
+    <audio id="sound1" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound2" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound3" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- 滚动公告栏 -->
+    <div class="w-full px-4 sm:px-6 mb-4 mt-2">
+        <div class="bg-black bg-opacity-70 rounded-lg p-3 overflow-hidden relative">
+            <div class="absolute left-0 top-0 h-full w-1/4 bg-gradient-to-r from-black to-transparent z-10"></div>
+            <div class="absolute right-0 top-0 h-full w-1/4 bg-gradient-to-l from-black to-transparent z-10"></div>
+            <div class="marquee-content flex items-center whitespace-nowrap text-white text-sm font-medium">
+                <span class="mr-6"><i class="fa fa-bullhorn mr-2"></i>PI像素领地2.0版本即将发布，敬请期待！</span>
+                <span class="mr-6"><i class="fa fa-star mr-2"></i>恭喜用户"像素大师"获得本周最佳创作者称号！</span>
+                <span class="mr-6"><i class="fa fa-gift mr-2"></i>新用户注册即送50像素币，限时活动！</span>
+                <span class="mr-6"><i class="fa fa-calendar mr-2"></i>下周三将举行线上像素艺术创作大赛，欢迎参与！</span>
+                <span class="mr-6"><i class="fa fa-trophy mr-2"></i>PI像素领地NFT作品在国际数字艺术展中获得好评！</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 图片和按钮容器 -->
+    <div class="flex flex-col md:flex-row gap-4 w-full px-4 sm:px-6 max-w-xs sm:max-w-md mt-2">
+        <!-- 官方介绍 -->
+        <div class="flex flex-col items-center w-full">
+            <!-- 图片上传区域 -->
+            <div class="relative w-full h-20 mb-2 bg-gradient-to-r from-primary to-purple-400 rounded-md overflow-hidden cursor-pointer shadow-lg" id="introImageContainer">
+                <input type="file" id="introImageUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
+                <div id="introImagePreview" class="w-full h-full flex items-center justify-center">
+                    <i class="fa fa-cloud-upload text-white text-2xl"></i>
+                </div>
+            </div>
+            <button class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 px-4 rounded-lg transition-all duration-300 border-2 border-blue-500 shadow-[0_0_10px_#3b82f6] hover:shadow-[0_0_20px_#3b82f6] text-sm w-full" id="introBtn">
+                <i class="fa fa-info-circle mr-1"></i>官方介绍
+            </button>
+        </div>
+        
+        <!-- 股东详情 -->
+        <div class="flex flex-col items-center w-full">
+            <!-- 图片上传区域 -->
+            <div class="relative w-full h-20 mb-2 bg-gradient-to-r from-secondary to-yellow-300 rounded-md overflow-hidden cursor-pointer shadow-lg" id="shareholderImageContainer">
+                <input type="file" id="shareholderImageUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
+                <div id="shareholderImagePreview" class="w-full h-full flex items-center justify-center">
+                    <i class="fa fa-cloud-upload text-dark text-2xl"></i>
+                </div>
+            </div>
+            <button class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 px-4 rounded-lg transition-all duration-300 border-2 border-blue-500 shadow-[0_0_10px_#3b82f6] hover:shadow-[0_0_20px_#3b82f6] text-sm w-full" id="shareholderBtn">
+                <i class="fa fa-users mr-1"></i>股东详情
+            </button>
+        </div>
+        
+        <!-- 关于我们 -->
+        <div class="flex flex-col items-center w-full">
+            <!-- 图片上传区域 -->
+            <div class="relative w-full h-20 mb-2 bg-gradient-to-r from-primary to-purple-400 rounded-md overflow-hidden cursor-pointer shadow-lg" id="aboutImageContainer">
+                <input type="file" id="aboutImageUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
+                <div id="aboutImagePreview" class="w-full h-full flex items-center justify-center">
+                    <i class="fa fa-cloud-upload text-white text-2xl"></i>
+                </div>
+            </div>
+            <button class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 px-4 rounded-lg transition-all duration-300 border-2 border-blue-500 shadow-[0_0_10px_#3b82f6] hover:shadow-[0_0_20px_#3b82f6] text-sm w-full" id="aboutBtn">
+                <i class="fa fa-question-circle mr-1"></i>关于我们
+            </button>
+        </div>
+    </div>
+    
+    <!-- 图片查看器模态框 -->
+    <div class="modal" id="imageViewerModal">
+        <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
+            <div class="relative max-w-4xl max-h-[90vh]">
+                <span class="close-btn absolute -top-10 right-0 text-white text-3xl" id="closeImageViewerModal">&times;</span>
+                <img id="fullSizeImage" src="" alt="预览图片" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl">
+            </div>
+        </div>
+    </div>
+    
+    <!-- 股东进度器模态框 -->
+    <div class="modal" id="shareholderProgressModal">
+        <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
+            <div class="relative max-w-lg w-full bg-gradient-to-br from-primary to-purple-900 rounded-lg p-6 shadow-2xl">
+                <span class="close-btn absolute -top-10 right-0 text-white text-3xl" id="closeProgressModal">&times;</span>
+                <h3 class="text-2xl mb-4 text-white text-center">股东进度器</h3>
+                
+                <!-- 进度条容器 -->
+                <div class="space-y-6">
+                    <!-- 张明进度 -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-white">张明 - 首席执行官</span>
+                            <span class="text-white">75%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-4">
+                            <div class="bg-yellow-400 h-4 rounded-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 李华进度 -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-white">李华 - 首席技术官</span>
+                            <span class="text-white">60%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-4">
+                            <div class="bg-yellow-400 h-4 rounded-full" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 王芳进度 -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-white">王芳 - 首席运营官</span>
+                            <span class="text-white">85%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-4">
+                            <div class="bg-yellow-400 h-4 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 风险投资机构进度 -->
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-white">风险投资机构</span>
+                            <span class="text-white">90%</span>
+                        </div>
+                        <div class="w-full bg-gray-700 rounded-full h-4">
+                            <div class="bg-yellow-400 h-4 rounded-full" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 总体进度 -->
+                <div class="mt-8">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-white text-lg font-bold">总体进度</span>
+                        <span class="text-white text-lg font-bold">77.5%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-6">
+                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-200 h-6 rounded-full flex items-center justify-center text-black font-bold" style="width: 77.5%">
+                            77.5%
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 更新时间 -->
+                <div class="mt-6 text-center text-gray-300 text-sm">
+                    最后更新: 2025年7月22日
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 官方介绍模态框 -->
+    <div class="modal" id="introModal">
+        <div class="modal-backdrop absolute inset-0"></div>
+        <div class="modal-content text-white p-8">
+            <span class="close-btn" id="closeIntroModal">&times;</span>
+            <h2 class="text-3xl mb-6 text-shadow-glow-yellow">官方介绍</h2>
+            <div class="space-y-4">
+                <p>PI 像素领地是一个创新的数字艺术平台，致力于为艺术家和收藏家提供一个安全、透明的NFT交易环境。</p>
+                <p>我们的平台融合了最新的区块链技术和精美的像素艺术，为用户带来独特的数字艺术体验。</p>
+                <p>通过PI像素领地，艺术家可以轻松创建、展示和销售他们的像素艺术作品，而收藏家则可以发现和购买独特的数字藏品。</p>
+                <p>我们相信，像素艺术不仅仅是一种艺术形式，更是一种文化现象，代表了数字时代的创造力和创新精神。</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 股东详情模态框 -->
+    <div class="modal" id="shareholderModal">
+        <div class="modal-backdrop absolute inset-0"></div>
+        <div class="modal-content text-white p-8">
+            <span class="close-btn" id="closeShareholderModal">&times;</span>
+            <h2 class="text-3xl mb-6 text-shadow-glow-yellow">股东详情</h2>
+            
+            <!-- 查询股东进度器按钮 -->
+            <div class="mb-6 flex justify-center">
+                <button id="shareholderProgressBtn" class="bg-white text-black font-bold py-2 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center">
+                    <i class="fa fa-search mr-2"></i>查询股东进度器
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">张明</h3>
+                        <p>首席执行官 & 联合创始人</p>
+                        <p class="text-sm text-gray-300">持股比例: 35%</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">李华</h3>
+                        <p>首席技术官 & 联合创始人</p>
+                        <p class="text-sm text-gray-300">持股比例: 30%</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">王芳</h3>
+                        <p>首席运营官</p>
+                        <p class="text-sm text-gray-300">持股比例: 15%</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
+                        <i class="fa fa-users"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold">风险投资机构</h3>
+                        <p>多家知名VC</p>
+                        <p class="text-sm text-gray-300">持股比例: 20%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 关于我们模态框 -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-backdrop absolute inset-0"></div>
+        <div class="modal-content text-white p-8">
+            <span class="close-btn" id="closeAboutModal">&times;</span>
+            <h2 class="text-3xl mb-6 text-shadow-glow-yellow">关于我们</h2>
+            <div class="space-y-4">
+                <p>PI像素领地成立于2023年，是一个由热爱数字艺术和区块链技术的专业团队创建的平台。</p>
+                <p>我们的使命是通过区块链技术赋能数字艺术家，为他们提供一个公平、透明的创作和交易环境。</p>
+                <p>我们的团队由来自艺术、技术、金融和法律等多个领域的专业人士组成，拥有丰富的行业经验和深厚的专业知识。</p>
+                <p>我们相信，数字艺术是未来艺术发展的重要方向，而区块链技术将为数字艺术市场带来前所未有的机遇和挑战。</p>
+                <p>联系我们：</p>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>电子邮件: contact@pi-pixel.com</li>
+                    <li>微信公众号: PI像素领地</li>
+                    <li>Twitter: @PIPixel</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 创建星空背景
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starsCount = 200;
+            
+            for (let i = 0; i < starsCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机位置
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // 随机大小
+                const size = Math.random() * 2;
+                
+                // 随机闪烁持续时间
+                const duration = 2 + Math.random() * 3;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // 创建流星雨效果
+        function createMeteors() {
+            const meteorsContainer = document.getElementById('meteors');
+            const meteorsCount = 25; // 增加流星雨数量
+            
+            for (let i = 0; i < meteorsCount; i++) {
+                const meteor = document.createElement('div');
+                meteor.classList.add('meteor');
+                
+                // 随机方向 - true为向下，false为向上
+                const directionDown = Math.random() > 0.5;
+                
+                // 随机长度
+                const length = 100 + Math.random() * 200;
+                
+                // 随机持续时间 - 速度随机
+                const duration = 2 + Math.random() * 6;
+                
+                // 随机延迟
+                const delay = Math.random() * 10;
+                
+                // 设置动画
+                if (directionDown) {
+                    // 向下飞行的流星
+                    meteor.style.animationName = 'meteorDown';
+                    // 随机起始位置 - 上半部分更多流星
+                    const startX = Math.random() * 100;
+                    const startY = Math.random() * 50; // 主要集中在上半部分
+                    meteor.style.left = `${startX}%`;
+                    meteor.style.top = `${startY}%`;
+                    
+                    // 上半部分的流星更亮
+                    if (startY < 30) {
+                        meteor.style.opacity = '0.8';
+                        meteor.style.boxShadow = '0 0 20px rgba(255,255,255,1), 0 0 40px rgba(255,255,255,0.8)';
+                    }
+                } else {
+                    // 向上飞行的流星
+                    meteor.style.animationName = 'meteorUp';
+                    // 随机起始位置 - 下半部分更多流星
+                    const startX = Math.random() * 100;
+                    const startY = 50 + Math.random() * 50; // 主要集中在下半部分
+                    meteor.style.left = `${startX}%`;
+                    meteor.style.top = `${startY}%`;
+                    
+                    // 下半部分的流星更亮
+                    if (startY > 70) {
+                        meteor.style.opacity = '0.8';
+                        meteor.style.boxShadow = '0 0 20px rgba(255,255,255,1), 0 0 40px rgba(255,255,255,0.8)';
+                    }
+                }
+                
+                meteor.style.width = `${length}px`;
+                meteor.style.setProperty('--duration', `${duration}s`);
+                meteor.style.animationDelay = `${delay}s`;
+                
+                meteorsContainer.appendChild(meteor);
+            }
+        }
+        
+        // 创建棋盘格线条
+        function createGrid() {
+            const gridContainer = document.getElementById('gridContainer');
+            const gridSize = 40; // 网格大小
+            const horizontalLinesCount = Math.ceil(window.innerHeight / gridSize);
+            const verticalLinesCount = Math.ceil(window.innerWidth / gridSize);
+            
+            // 创建水平线
+            for (let i = 0; i < horizontalLinesCount; i++) {
+                const line = document.createElement('div');
+                line.classList.add('grid-line', 'grid-line-horizontal');
+                line.style.top = `${i * gridSize}px`;
+                line.style.animationDelay = `${Math.random() * 3}s`;
+                gridContainer.appendChild(line);
+            }
+            
+            // 创建垂直线
+            for (let i = 0; i < verticalLinesCount; i++) {
+                const line = document.createElement('div');
+                line.classList.add('grid-line', 'grid-line-vertical');
+                line.style.left = `${i * gridSize}px`;
+                line.style.animationDelay = `${Math.random() * 3}s`;
+                gridContainer.appendChild(line);
+            }
+        }
+        
+        // 打字机效果
+        function typeWriter(element, text, speed = 100) {
+            element.textContent = '';
+            element.classList.add('typing-effect');
+            
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    // 移除光标效果
+                    setTimeout(() => {
+                        element.classList.remove('typing-effect');
+                    }, 1000);
+                }
+            }
+            
+            type();
+        }
+        
+        // 播放音效函数
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            sound.currentTime = 0;
+            sound.play().catch(error => {
+                console.log("音频播放失败:", error);
+            });
+        }
+        
+        // 设置股东进度器功能
+        function setupShareholderProgress() {
+            const progressBtn = document.getElementById('shareholderProgressBtn');
+            const progressModal = document.getElementById('shareholderProgressModal');
+            const closeProgressModal = document.getElementById('closeProgressModal');
+            
+            // 打开进度器模态框
+            progressBtn.addEventListener('click', () => {
+                playSound('sound2'); // 播放音效
+                progressModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                
+                // 动画效果 - 进度条从0%增长到目标值
+                const progressBars = progressModal.querySelectorAll('.bg-yellow-400, .bg-gradient-to-r');
+                progressBars.forEach(bar => {
+                    const targetWidth = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.transition = 'width 1.5s ease-out';
+                        bar.style.width = targetWidth;
+                    }, 100);
+                });
+            });
+            
+            // 关闭进度器模态框
+            closeProgressModal.addEventListener('click', () => {
+                playSound('sound3'); // 播放音效
+                progressModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 点击模态框背景关闭
+            progressModal.addEventListener('click', (e) => {
+                if (e.target === progressModal || e.target === progressModal.querySelector('.modal-backdrop')) {
+                    playSound('sound3'); // 播放音效
+                    progressModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+        
+        // 图片上传和预览功能
+        function setupImageUploads() {
+            const uploads = [
+                { input: 'introImageUpload', preview: 'introImagePreview', container: 'introImageContainer' },
+                { input: 'shareholderImageUpload', preview: 'shareholderImagePreview', container: 'shareholderImageContainer' },
+                { input: 'aboutImageUpload', preview: 'aboutImagePreview', container: 'aboutImageContainer' }
+            ];
+            
+            const imageViewerModal = document.getElementById('imageViewerModal');
+            const fullSizeImage = document.getElementById('fullSizeImage');
+            const closeImageViewerModal = document.getElementById('closeImageViewerModal');
+            
+            uploads.forEach(item => {
+                const input = document.getElementById(item.input);
+                const preview = document.getElementById(item.preview);
+                const container = document.getElementById(item.container);
+                
+                // 处理图片上传
+                input.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = (e) => {
+                            preview.innerHTML = `<img src="${e.target.result}" alt="上传图片" class="w-full h-full object-cover">`;
+                            
+                            // 存储图片数据到容器元素
+                            container.dataset.imageUrl = e.target.result;
+                        };
+                        
+                        reader.readAsDataURL(file);
+                        playSound('sound1'); // 播放上传音效
+                    }
+                });
+                
+                // 点击图片查看全貌
+                container.addEventListener('click', (e) => {
+                    // 如果点击的是上传按钮，不打开查看器
+                    if (e.target.tagName === 'INPUT') return;
+                    
+                    const imageUrl = container.dataset.imageUrl;
+                    if (imageUrl) {
+                        fullSizeImage.src = imageUrl;
+                        imageViewerModal.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                        playSound('sound2'); // 播放查看音效
+                    }
+                });
+            });
+            
+            // 关闭图片查看器
+            closeImageViewerModal.addEventListener('click', () => {
+                imageViewerModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                playSound('sound3'); // 播放关闭音效
+            });
+            
+            // 点击模态框背景关闭
+            imageViewerModal.addEventListener('click', (e) => {
+                if (e.target === imageViewerModal || e.target === imageViewerModal.querySelector('.modal-backdrop')) {
+                    imageViewerModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    playSound('sound3'); // 播放关闭音效
+                }
+            });
+        }
+        
+        // 模态框功能
+        function setupModals() {
+            // 官方介绍模态框
+            const introBtn = document.getElementById('introBtn');
+            const introModal = document.getElementById('introModal');
+            const closeIntroModal = document.getElementById('closeIntroModal');
+            
+            introBtn.addEventListener('click', () => {
+                playSound('sound1');
+                introModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeIntroModal.addEventListener('click', () => {
+                playSound('sound1');
+                introModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 股东详情模态框
+            const shareholderBtn = document.getElementById('shareholderBtn');
+            const shareholderModal = document.getElementById('shareholderModal');
+            const closeShareholderModal = document.getElementById('closeShareholderModal');
+            
+            shareholderBtn.addEventListener('click', () => {
+                playSound('sound2');
+                shareholderModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeShareholderModal.addEventListener('click', () => {
+                playSound('sound2');
+                shareholderModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 关于我们模态框
+            const aboutBtn = document.getElementById('aboutBtn');
+            const aboutModal = document.getElementById('aboutModal');
+            const closeAboutModal = document.getElementById('closeAboutModal');
+            
+            aboutBtn.addEventListener('click', () => {
+                playSound('sound3');
+                aboutModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeAboutModal.addEventListener('click', () => {
+                playSound('sound3');
+                aboutModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // 点击模态框外部关闭
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // ESC键关闭模态框
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal');
+                    modals.forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+        
+        // 按钮悬停效果
+        function setupButtonEffects() {
+            const buttons = document.querySelectorAll('.btn');
+            
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    gsap.to(button, {
+                        scale: 1.05,
+                        duration: 0.3
+                    });
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                    gsap.to(button, {
+                        scale: 1,
+                        duration: 0.3
+                    });
+                });
+                
+                button.addEventListener('click', () => {
+                    gsap.fromTo(button, 
+                        { scale: 0.95 },
+                        { scale: 1, duration: 0.2 }
+                    );
+                });
+            });
+        }
+        
+        // 初始化
+        function init() {
+            createStars();
+            createMeteors();
+            createGrid();
+            setupImageUploads();
+            setupShareholderProgress();
+            setupModals();
+            setupButtonEffects();
+            
+            // 标题打字机效果
+            const mainTitle = document.getElementById('mainTitle');
+            const titleText = "PI 像素领地";
+            typeWriter(mainTitle, titleText, 200);
+            
+            // 窗口大小改变时重新创建网格
+            window.addEventListener('resize', () => {
+                const gridContainer = document.getElementById('gridContainer');
+                gridContainer.innerHTML = '';
+                createGrid();
+            });
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
