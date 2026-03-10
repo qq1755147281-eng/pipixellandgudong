@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -280,9 +280,9 @@
         
         .modal-content {
             position: relative;
-            margin: 10% auto;
+            margin: 5% auto;
             padding: 20px;
-            width: 80%;
+            width: 95%;
             max-width: 600px;
             background: linear-gradient(135deg, rgba(138, 43, 226, 0.9) 0%, rgba(75, 0, 130, 0.9) 100%);
             border-radius: 10px;
@@ -380,47 +380,19 @@
         </div>
     </div>
     
-    <!-- 图片和按钮容器 -->
-    <div class="flex flex-col md:flex-row gap-4 w-full px-4 sm:px-6 max-w-xs sm:max-w-md mt-2">
-        <!-- 官方介绍 -->
-        <div class="flex flex-col items-center w-full">
-            <!-- 图片上传区域 -->
-            <div class="relative w-full h-20 mb-2 bg-gradient-to-r from-primary to-purple-400 rounded-md overflow-hidden cursor-pointer shadow-lg" id="introImageContainer">
-                <input type="file" id="introImageUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
-                <div id="introImagePreview" class="w-full h-full flex items-center justify-center">
-                    <i class="fa fa-cloud-upload text-white text-2xl"></i>
-                </div>
-            </div>
-            <button class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 px-4 rounded-lg transition-all duration-300 border-2 border-blue-500 shadow-[0_0_10px_#3b82f6] hover:shadow-[0_0_20px_#3b82f6] text-sm w-full" id="introBtn">
-                <i class="fa fa-info-circle mr-1"></i>官方介绍
-            </button>
-        </div>
-        
+    <!-- 股东详情按钮容器 -->
+    <div class="w-full px-4 sm:px-6 max-w-xs sm:max-w-md mt-2">
         <!-- 股东详情 -->
         <div class="flex flex-col items-center w-full">
-            <!-- 图片上传区域 -->
-            <div class="relative w-full h-20 mb-2 bg-gradient-to-r from-secondary to-yellow-300 rounded-md overflow-hidden cursor-pointer shadow-lg" id="shareholderImageContainer">
-                <input type="file" id="shareholderImageUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
-                <div id="shareholderImagePreview" class="w-full h-full flex items-center justify-center">
-                    <i class="fa fa-cloud-upload text-dark text-2xl"></i>
-                </div>
+            <!-- 股东查询器标题框 -->
+            <div class="w-full h-20 mb-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-md flex items-center justify-center shadow-lg cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,1)]" id="shareholderImageContainer">
+                <h3 class="text-white text-xl font-bold animate-pulse" style="text-shadow: 0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8);">股东查询器</h3>
             </div>
-            <button class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 px-4 rounded-lg transition-all duration-300 border-2 border-blue-500 shadow-[0_0_10px_#3b82f6] hover:shadow-[0_0_20px_#3b82f6] text-sm w-full" id="shareholderBtn">
-                <i class="fa fa-users mr-1"></i>股东详情
+            <button class="btn bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-bold py-0 px-4 rounded-md transition-all duration-300 shadow-[0_0_10px_rgba(59,130,246,0.8)] hover:shadow-[0_0_20px_rgba(59,130,246,1)] text-base w-full h-20 mb-4 flex items-center justify-center" id="shareholderBtn">
+                <i class="fa fa-users mr-2"></i>股东详情
             </button>
-        </div>
-        
-        <!-- 关于我们 -->
-        <div class="flex flex-col items-center w-full">
-            <!-- 图片上传区域 -->
-            <div class="relative w-full h-20 mb-2 bg-gradient-to-r from-primary to-purple-400 rounded-md overflow-hidden cursor-pointer shadow-lg" id="aboutImageContainer">
-                <input type="file" id="aboutImageUpload" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
-                <div id="aboutImagePreview" class="w-full h-full flex items-center justify-center">
-                    <i class="fa fa-cloud-upload text-white text-2xl"></i>
-                </div>
-            </div>
-            <button class="btn bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-2 px-4 rounded-lg transition-all duration-300 border-2 border-blue-500 shadow-[0_0_10px_#3b82f6] hover:shadow-[0_0_20px_#3b82f6] text-sm w-full" id="aboutBtn">
-                <i class="fa fa-question-circle mr-1"></i>关于我们
+            <button class="btn bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 hover:from-red-600 hover:via-yellow-600 hover:to-blue-600 text-white font-bold py-0 px-4 rounded-md transition-all duration-300 shadow-[0_0_10px_rgba(239,68,68,0.8)] hover:shadow-[0_0_20px_rgba(239,68,68,1)] text-base w-full h-20" id="aboutUsBtn">
+                <i class="fa fa-info-circle mr-2"></i>关于我们
             </button>
         </div>
     </div>
@@ -510,21 +482,52 @@
         </div>
     </div>
     
-    <!-- 官方介绍模态框 -->
-    <div class="modal" id="introModal">
-        <div class="modal-backdrop absolute inset-0"></div>
-        <div class="modal-content text-white p-8">
-            <span class="close-btn" id="closeIntroModal">&times;</span>
-            <h2 class="text-3xl mb-6 text-shadow-glow-yellow">官方介绍</h2>
-            <div class="space-y-4">
-                <p>PI 像素领地是一个创新的数字艺术平台，致力于为艺术家和收藏家提供一个安全、透明的NFT交易环境。</p>
-                <p>我们的平台融合了最新的区块链技术和精美的像素艺术，为用户带来独特的数字艺术体验。</p>
-                <p>通过PI像素领地，艺术家可以轻松创建、展示和销售他们的像素艺术作品，而收藏家则可以发现和购买独特的数字藏品。</p>
-                <p>我们相信，像素艺术不仅仅是一种艺术形式，更是一种文化现象，代表了数字时代的创造力和创新精神。</p>
+
+    
+    <!-- 关于我们模态框 -->
+    <div id="aboutUsModal" class="modal fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0 bg-black bg-opacity-75 backdrop-blur-sm"></div>
+        <div class="modal-content relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-dark bg-opacity-90 text-white p-4 sm:p-6 rounded-lg shadow-2xl border-2 border-secondary w-[95%] sm:w-[90%] max-w-md max-h-[85vh] overflow-y-auto">
+            <div class="modal-header flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-secondary">关于我们</h2>
+                <button class="close-modal text-gray-400 hover:text-white text-2xl" data-modal="aboutUsModal">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-4">PI像素领地是一个充满活力和创新的社区，致力于为所有参与者提供一个公平、透明的平台。</p>
+                <p class="mb-4">我们的使命是通过区块链技术，重新定义数字资产的所有权和价值，让每一个像素都充满无限可能。</p>
+                <p>加入我们，一起探索数字世界的新边界！</p>
             </div>
         </div>
     </div>
-    
+
+    <!-- 股东查询器模态框 -->
+    <div id="shareholderQueryModal" class="modal fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop absolute inset-0 bg-black bg-opacity-75 backdrop-blur-sm"></div>
+        <div class="modal-content relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-green-500 to-blue-500 p-4 sm:p-6 rounded-lg shadow-2xl border-2 border-secondary w-[95%] sm:w-[90%] max-w-4xl max-h-[85vh] overflow-y-auto">
+            <div class="modal-header flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-white">股东信息列表</h2>
+                <button class="close-modal text-gray-400 hover:text-white text-2xl" data-modal="shareholderQueryModal">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body bg-white bg-opacity-10 p-4 rounded-lg">
+                <div id="shareholderList" class="space-y-4">
+                    <!-- 股东数据将通过JavaScript动态填充为卡片 -->
+                </div>
+                <!-- 分页控件 -->
+                <div class="flex items-center justify-between mt-6">
+                    <div class="text-white text-sm">显示 <span id="pageInfo">1 - 10</span> 条，共 <span id="totalInfo">3140</span> 条</div>
+                    <div class="flex space-x-2">
+                        <button id="prevPageBtn" class="px-4 py-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 disabled:opacity-50 text-sm">上一页</button>
+                        <button id="nextPageBtn" class="px-4 py-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 text-sm">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 股东详情模态框 -->
     <div class="modal" id="shareholderModal">
         <div class="modal-backdrop absolute inset-0"></div>
@@ -584,26 +587,7 @@
         </div>
     </div>
     
-    <!-- 关于我们模态框 -->
-    <div class="modal" id="aboutModal">
-        <div class="modal-backdrop absolute inset-0"></div>
-        <div class="modal-content text-white p-8">
-            <span class="close-btn" id="closeAboutModal">&times;</span>
-            <h2 class="text-3xl mb-6 text-shadow-glow-yellow">关于我们</h2>
-            <div class="space-y-4">
-                <p>PI像素领地成立于2023年，是一个由热爱数字艺术和区块链技术的专业团队创建的平台。</p>
-                <p>我们的使命是通过区块链技术赋能数字艺术家，为他们提供一个公平、透明的创作和交易环境。</p>
-                <p>我们的团队由来自艺术、技术、金融和法律等多个领域的专业人士组成，拥有丰富的行业经验和深厚的专业知识。</p>
-                <p>我们相信，数字艺术是未来艺术发展的重要方向，而区块链技术将为数字艺术市场带来前所未有的机遇和挑战。</p>
-                <p>联系我们：</p>
-                <ul class="list-disc pl-5 space-y-2">
-                    <li>电子邮件: contact@pi-pixel.com</li>
-                    <li>微信公众号: PI像素领地</li>
-                    <li>Twitter: @PIPixel</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+
 
     <script>
         // 创建星空背景
@@ -793,123 +777,125 @@
             });
         }
         
-        // 图片上传和预览功能
-        function setupImageUploads() {
-            const uploads = [
-                { input: 'introImageUpload', preview: 'introImagePreview', container: 'introImageContainer' },
-                { input: 'shareholderImageUpload', preview: 'shareholderImagePreview', container: 'shareholderImageContainer' },
-                { input: 'aboutImageUpload', preview: 'aboutImagePreview', container: 'aboutImageContainer' }
-            ];
-            
-            const imageViewerModal = document.getElementById('imageViewerModal');
-            const fullSizeImage = document.getElementById('fullSizeImage');
-            const closeImageViewerModal = document.getElementById('closeImageViewerModal');
-            
-            uploads.forEach(item => {
-                const input = document.getElementById(item.input);
-                const preview = document.getElementById(item.preview);
-                const container = document.getElementById(item.container);
-                
-                // 处理图片上传
-                input.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        
-                        reader.onload = (e) => {
-                            preview.innerHTML = `<img src="${e.target.result}" alt="上传图片" class="w-full h-full object-cover">`;
-                            
-                            // 存储图片数据到容器元素
-                            container.dataset.imageUrl = e.target.result;
-                        };
-                        
-                        reader.readAsDataURL(file);
-                        playSound('sound1'); // 播放上传音效
-                    }
-                });
-                
-                // 点击图片查看全貌
-                container.addEventListener('click', (e) => {
-                    // 如果点击的是上传按钮，不打开查看器
-                    if (e.target.tagName === 'INPUT') return;
-                    
-                    const imageUrl = container.dataset.imageUrl;
-                    if (imageUrl) {
-                        fullSizeImage.src = imageUrl;
-                        imageViewerModal.style.display = 'block';
-                        document.body.style.overflow = 'hidden';
-                        playSound('sound2'); // 播放查看音效
-                    }
-                });
-            });
-            
-            // 关闭图片查看器
-            closeImageViewerModal.addEventListener('click', () => {
-                imageViewerModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                playSound('sound3'); // 播放关闭音效
-            });
-            
-            // 点击模态框背景关闭
-            imageViewerModal.addEventListener('click', (e) => {
-                if (e.target === imageViewerModal || e.target === imageViewerModal.querySelector('.modal-backdrop')) {
-                    imageViewerModal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                    playSound('sound3'); // 播放关闭音效
+        // 股东查询器功能
+        function setupShareholderQuery() {
+            const shareholderImageContainer = document.getElementById('shareholderImageContainer');
+            const shareholderQueryModal = document.getElementById('shareholderQueryModal');
+            const tableBody = document.getElementById('shareholderTableBody');
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const pageInfo = document.getElementById('pageInfo');
+            const totalInfo = document.getElementById('totalInfo');
+
+            let currentPage = 1;
+            const itemsPerPage = 10;
+            const totalShareholders = 3140;
+            const totalPages = Math.ceil(totalShareholders / itemsPerPage);
+
+            // 生成模拟股东数据
+            function generateShareholderData(startIndex, endIndex) {
+                const data = [];
+                for (let i = startIndex; i <= endIndex; i++) {
+                    data.push({
+                        id: i,
+                        name: `股东${i}`,
+                        date: `2025-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`,
+                        shares: Math.floor(Math.random() * 1000) + 100
+                    });
                 }
+                return data;
+            }
+
+            // 渲染股东数据
+            function renderShareholderData(page) {
+                const startIndex = (page - 1) * itemsPerPage + 1;
+                const endIndex = Math.min(page * itemsPerPage, totalShareholders);
+                const shareholders = generateShareholderData(startIndex, endIndex);
+
+                const listContainer = document.getElementById('shareholderList');
+                listContainer.innerHTML = '';
+
+                shareholders.forEach(shareholder => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-black bg-opacity-40 p-4 rounded-lg border border-white border-opacity-20';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-white font-bold text-lg">${shareholder.name}</span>
+                            <span class="text-yellow-300 text-sm">#${shareholder.id}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-300">入股时间</p>
+                                <p class="text-white">${shareholder.date}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-300">股份数量</p>
+                                <p class="text-white font-semibold">${shareholder.shares}</p>
+                            </div>
+                        </div>
+                    `;
+                    listContainer.appendChild(card);
+                });
+
+                pageInfo.textContent = `${startIndex} - ${endIndex}`;
+                totalInfo.textContent = totalShareholders;
+
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages;
+            }
+
+            // 上一页按钮点击事件
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderShareholderData(currentPage);
+                    playSound('sound2');
+                }
+            });
+
+            // 下一页按钮点击事件
+            nextPageBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderShareholderData(currentPage);
+                    playSound('sound2');
+                }
+            });
+
+            // 点击股东查询器标题框打开模态框
+            shareholderImageContainer.addEventListener('click', () => {
+                currentPage = 1;
+                renderShareholderData(currentPage);
+                shareholderQueryModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                playSound('sound2');
             });
         }
         
         // 模态框功能
         function setupModals() {
-            // 官方介绍模态框
-            const introBtn = document.getElementById('introBtn');
-            const introModal = document.getElementById('introModal');
-            const closeIntroModal = document.getElementById('closeIntroModal');
-            
-            introBtn.addEventListener('click', () => {
-                playSound('sound1');
-                introModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            });
-            
-            closeIntroModal.addEventListener('click', () => {
-                playSound('sound1');
-                introModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-            
             // 股东详情模态框
             const shareholderBtn = document.getElementById('shareholderBtn');
             const shareholderModal = document.getElementById('shareholderModal');
             const closeShareholderModal = document.getElementById('closeShareholderModal');
             
+            // 股东详情按钮点击事件
             shareholderBtn.addEventListener('click', () => {
-                playSound('sound2');
+                playSound('sound3'); // 播放叮叮叮叮音效
                 shareholderModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+
+            // 关于我们按钮点击事件
+            aboutUsBtn.addEventListener('click', () => {
+                playSound('sound1'); // 播放音效
+                aboutUsModal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             });
             
             closeShareholderModal.addEventListener('click', () => {
-                playSound('sound2');
+                playSound('sound1');
                 shareholderModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-            
-            // 关于我们模态框
-            const aboutBtn = document.getElementById('aboutBtn');
-            const aboutModal = document.getElementById('aboutModal');
-            const closeAboutModal = document.getElementById('closeAboutModal');
-            
-            aboutBtn.addEventListener('click', () => {
-                playSound('sound3');
-                aboutModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            });
-            
-            closeAboutModal.addEventListener('click', () => {
-                playSound('sound3');
-                aboutModal.style.display = 'none';
                 document.body.style.overflow = 'auto';
             });
             
@@ -966,7 +952,7 @@
             createStars();
             createMeteors();
             createGrid();
-            setupImageUploads();
+            setupShareholderQuery();
             setupShareholderProgress();
             setupModals();
             setupButtonEffects();
