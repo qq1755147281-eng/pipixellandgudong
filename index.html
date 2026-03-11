@@ -1,22 +1,19 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="zh-CN"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PI 像素领地</title>
-    <!-- Tailwind CSS v3 -->
+    <!-- 外部资源 -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <!-- GSAP 动画库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#8A2BE2', // 紫色
-                        secondary: '#FFD700', // 黄色
+                        primary: '#8A2BE2',
+                        secondary: '#FFD700',
                         dark: '#121212',
                         light: '#f8f9fa'
                     },
@@ -43,6 +40,7 @@
             }
         }
     </script>
+    
     <style type="text/tailwindcss">
         @layer utilities {
             .text-shadow {
@@ -78,6 +76,7 @@
             }
         }
     </style>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap');
         
@@ -96,7 +95,7 @@
             100% { background-position: 0% 50%; }
         }
         
-        .stars {
+        .stars, .meteors {
             position: absolute;
             top: 0;
             left: 0;
@@ -123,7 +122,6 @@
             height: 2px;
             width: 150px;
             box-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5);
-            animation: meteor var(--duration) linear infinite;
             opacity: 0;
             z-index: 2;
         }
@@ -326,29 +324,20 @@
             50% { opacity: 0; }
         }
         
-        /* 滚动公告栏动画 */
         .marquee-content {
             animation: marquee 30s linear infinite;
         }
         
         @keyframes marquee {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-start pt-8 md:pt-16 relative z-10">
-    <!-- 星空背景 -->
+    <!-- 背景特效 -->
     <div class="stars" id="stars" style="z-index: 1;"></div>
-    
-    <!-- 流星雨效果 -->
-    <div class="stars" id="meteors" style="z-index: 2;"></div>
-    
-    <!-- 棋盘格线条 -->
+    <div class="meteors" id="meteors" style="z-index: 2;"></div>
     <div class="grid-container" id="gridContainer" style="z-index: 1;"></div>
     
     <!-- 主标题 -->
@@ -380,38 +369,34 @@
         </div>
     </div>
     
-    <!-- 股东详情按钮容器 -->
+    <!-- 功能按钮容器 -->
     <div class="w-full px-4 sm:px-6 max-w-xs sm:max-w-md mt-2">
-        <!-- 股东详情 -->
-        <div class="flex flex-col items-center w-full">
-            <!-- 股东查询器标题框 -->
-            <div class="w-full h-20 mb-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-md flex items-center justify-center shadow-lg cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,1)]" id="shareholderImageContainer">
-                <h3 class="text-white text-xl font-bold animate-pulse" style="text-shadow: 0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8);">股东查询器</h3>
-            </div>
-            <button class="btn bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-bold py-0 px-4 rounded-md transition-all duration-300 shadow-[0_0_10px_rgba(59,130,246,0.8)] hover:shadow-[0_0_20px_rgba(59,130,246,1)] text-base w-full h-20 mb-4 flex items-center justify-center" id="shareholderBtn">
-                <i class="fa fa-users mr-2"></i>股东详情
-            </button>
-            <button class="btn bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 hover:from-red-600 hover:via-yellow-600 hover:to-blue-600 text-white font-bold py-0 px-4 rounded-md transition-all duration-300 shadow-[0_0_10px_rgba(239,68,68,0.8)] hover:shadow-[0_0_20px_rgba(239,68,68,1)] text-base w-full h-20" id="aboutUsBtn">
-                <i class="fa fa-info-circle mr-2"></i>关于我们
-            </button>
+        <!-- 股东查询器标题框 -->
+        <div class="w-full h-20 mb-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-md flex items-center justify-center shadow-lg cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,1)]" id="shareholderImageContainer">
+            <h3 class="text-white text-xl font-bold animate-pulse" style="text-shadow: 0 0 10px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.8);">股东查询器</h3>
         </div>
-    </div>
-    
-    <!-- 图片查看器模态框 -->
-    <div class="modal" id="imageViewerModal">
-        <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
-            <div class="relative max-w-4xl max-h-[90vh]">
-                <span class="close-btn absolute -top-10 right-0 text-white text-3xl" id="closeImageViewerModal">&times;</span>
-                <img id="fullSizeImage" src="" alt="预览图片" class="max-w-full max-h-[90vh] rounded-lg shadow-2xl">
-            </div>
-        </div>
+        
+        <!-- 股东详情按钮 -->
+        <button class="btn bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-bold py-0 px-4 rounded-md transition-all duration-300 shadow-[0_0_10px_rgba(59,130,246,0.8)] hover:shadow-[0_0_20px_rgba(59,130,246,1)] text-base w-full h-20 mb-4 flex items-center justify-center" id="shareholderBtn">
+            <i class="fa fa-users mr-2"></i>股东详情
+        </button>
+        
+        <!-- 关于我们按钮 -->
+        <button class="btn bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 hover:from-red-600 hover:via-yellow-600 hover:to-blue-600 text-white font-bold py-0 px-4 rounded-md transition-all duration-300 shadow-[0_0_10px_rgba(239,68,68,0.8)] hover:shadow-[0_0_20px_rgba(239,68,68,1)] text-base w-full h-20 mb-4" id="aboutUsBtn">
+            <i class="fa fa-info-circle mr-2"></i>关于我们
+        </button>
+
+        <!-- 返回首页按钮 -->
+        <a href="https://pipiexcland333.pages.dev/" target="_blank" class="inline-block w-full h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-medium py-0 px-4 rounded-md transition-all duration-300 shadow-[0_0_8px_rgba(255,215,0,0.5)] hover:shadow-[0_0_15px_rgba(255,215,0,0.8)] text-sm flex items-center justify-center">
+            <i class="fa fa-home mr-1"></i>返回首页
+        </a>
     </div>
     
     <!-- 股东进度器模态框 -->
     <div class="modal" id="shareholderProgressModal">
         <div class="modal-backdrop absolute inset-0 flex items-center justify-center">
             <div class="relative max-w-lg w-full bg-gradient-to-br from-primary to-purple-900 rounded-lg p-6 shadow-2xl">
-                <span class="close-btn absolute -top-10 right-0 text-white text-3xl" id="closeProgressModal">&times;</span>
+                <span class="close-btn absolute -top-10 right-0 text-white text-3xl" id="closeProgressModal">×</span>
                 <h3 class="text-2xl mb-4 text-white text-center">股东进度器</h3>
                 
                 <!-- 进度条容器 -->
@@ -482,12 +467,10 @@
         </div>
     </div>
     
-
-    
     <!-- 关于我们模态框 -->
     <div id="aboutUsModal" class="modal fixed inset-0 z-50 hidden">
         <div class="modal-backdrop absolute inset-0 bg-black bg-opacity-75 backdrop-blur-sm"></div>
-        <div class="modal-content relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-dark bg-opacity-90 text-white p-4 sm:p-6 rounded-lg shadow-2xl border-2 border-secondary w-[95%] sm:w-[90%] max-w-md max-h-[85vh] overflow-y-auto">
+        <div class="modal-content relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-black via-red-500 to-green-500 p-4 sm:p-6 rounded-lg shadow-2xl border-2 border-secondary w-[45%] sm:w-[40%] max-w-sm max-h-[90vh] overflow-y-auto">
             <div class="modal-header flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-secondary">关于我们</h2>
                 <button class="close-modal text-gray-400 hover:text-white text-2xl" data-modal="aboutUsModal">
@@ -495,9 +478,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p class="mb-4">PI像素领地是一个充满活力和创新的社区，致力于为所有参与者提供一个公平、透明的平台。</p>
-                <p class="mb-4">我们的使命是通过区块链技术，重新定义数字资产的所有权和价值，让每一个像素都充满无限可能。</p>
-                <p>加入我们，一起探索数字世界的新边界！</p>
+                <p class="mb-4" style="color: rgba(250, 250, 250, 0.99);">欢迎来到PI像素领地！我们是一个专注于数字资产创新的先锋社区。</p>
+                <p class="mb-4" style="color: rgba(252, 250, 250, 0.97);">在这里，我们通过区块链技术赋能每一个像素，让数字世界的价值重新被定义。我们的平台为创作者、投资者和爱好者提供了一个共同成长的生态系统。</p>
+                <p class="mb-4" style="color: rgb(241, 245, 0);">官方邮箱：pipixelland@protonmail.com</p>
+                <p class="mb-4" style="color: rgb(250, 234, 15);">官方推特：@pipixelland</p>
+                <p class="mb-4" style="color: rgb(250, 230, 15);">官方电报群：pipixelland314</p>
+                <p style="color: rgba(245, 237, 237, 0.99);">加入我们，一起开启数字资产的新时代！</p>
             </div>
         </div>
     </div>
@@ -505,7 +491,7 @@
     <!-- 股东查询器模态框 -->
     <div id="shareholderQueryModal" class="modal fixed inset-0 z-50 hidden">
         <div class="modal-backdrop absolute inset-0 bg-black bg-opacity-75 backdrop-blur-sm"></div>
-        <div class="modal-content relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-green-500 to-blue-500 p-4 sm:p-6 rounded-lg shadow-2xl border-2 border-secondary w-[95%] sm:w-[90%] max-w-4xl max-h-[85vh] overflow-y-auto">
+        <div class="modal-content relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-green-500 via-purple-500 to-blue-500 p-4 sm:p-6 rounded-lg shadow-2xl border-2 border-secondary w-[45%] sm:w-[40%] max-w-sm max-h-[90vh] overflow-y-auto">
             <div class="modal-header flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-white">股东信息列表</h2>
                 <button class="close-modal text-gray-400 hover:text-white text-2xl" data-modal="shareholderQueryModal">
@@ -513,15 +499,31 @@
                 </button>
             </div>
             <div class="modal-body bg-white bg-opacity-10 p-4 rounded-lg">
-                <div id="shareholderList" class="space-y-4">
-                    <!-- 股东数据将通过JavaScript动态填充为卡片 -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-white text-sm">
+                        <thead class="text-xs uppercase bg-black bg-opacity-50">
+                            <tr>
+                                <th scope="col" class="px-1 py-1">序列</th>
+                                <th scope="col" class="px-1 py-1">股数</th>
+                                <th scope="col" class="px-1 py-1">时间</th>
+                                <th scope="col" class="px-1 py-1">姓名</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shareholderTableBody">
+                            <!-- 股东数据将通过JavaScript动态填充 -->
+                        </tbody>
+                    </table>
                 </div>
                 <!-- 分页控件 -->
-                <div class="flex items-center justify-between mt-6">
+                <div class="flex items-center justify-between mt-4">
                     <div class="text-white text-sm">显示 <span id="pageInfo">1 - 10</span> 条，共 <span id="totalInfo">3140</span> 条</div>
                     <div class="flex space-x-2">
-                        <button id="prevPageBtn" class="px-4 py-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 disabled:opacity-50 text-sm">上一页</button>
-                        <button id="nextPageBtn" class="px-4 py-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 text-sm">下一页</button>
+                        <button id="prevPageBtn" class="px-4 py-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 disabled:opacity-50 text-sm">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <button id="nextPageBtn" class="px-4 py-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 text-sm">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -532,64 +534,73 @@
     <div class="modal" id="shareholderModal">
         <div class="modal-backdrop absolute inset-0"></div>
         <div class="modal-content text-white p-8">
-            <span class="close-btn" id="closeShareholderModal">&times;</span>
+            <span class="close-btn" id="closeShareholderModal">×</span>
             <h2 class="text-3xl mb-6 text-shadow-glow-yellow">股东详情</h2>
-            
-            <!-- 查询股东进度器按钮 -->
-            <div class="mb-6 flex justify-center">
-                <button id="shareholderProgressBtn" class="bg-white text-black font-bold py-2 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center">
-                    <i class="fa fa-search mr-2"></i>查询股东进度器
-                </button>
-            </div>
             
             <div class="space-y-6">
                 <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
-                        <i class="fa fa-user"></i>
-                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-2xl animate-pulse-slow shadow-[0_0_15px_rgba(239,68,68,0.8)]"></div>
                     <div>
-                        <h3 class="text-xl font-bold">张明</h3>
-                        <p>首席执行官 & 联合创始人</p>
-                        <p class="text-sm text-gray-300">持股比例: 35%</p>
+                        <h3 class="text-xl font-bold">入股股东（投资）</h3>
+                        <p>每一位先锋选择成就伟业  &amp; 成就生态联合创始人</p>
+                        <p class="text-sm text-gray-300"> 3140位股东     持股比例: 100%    </p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
-                        <i class="fa fa-user"></i>
-                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-2xl animate-pulse-slow shadow-[0_0_15px_rgba(255,215,0,0.8)]"></div>
                     <div>
-                        <h3 class="text-xl font-bold">李华</h3>
-                        <p>首席技术官 & 联合创始人</p>
-                        <p class="text-sm text-gray-300">持股比例: 30%</p>
+                        <h3 class="text-xl font-bold">推广股东（免费）</h3>
+                        <p>推广7个入股数量成就免费股东</p>
+                        <p class="text-sm text-gray-300">  314位推广股份  持股比例: 100% </p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
-                        <i class="fa fa-user"></i>
-                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-2xl animate-pulse-slow shadow-[0_0_15px_rgba(74,222,128,0.8)]"></div>
                     <div>
-                        <h3 class="text-xl font-bold">王芳</h3>
-                        <p>首席运营官</p>
-                        <p class="text-sm text-gray-300">持股比例: 15%</p>
+                        <h3 class="text-xl font-bold">收益回归每一位派友</h3>
+                        <p>分红=股东+运营+贡献者+用户</p>
+                        <p class="text-sm text-gray-300">
+</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-2xl">
-                        <i class="fa fa-users"></i>
-                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-green-500 rounded-full flex items-center justify-center text-2xl animate-pulse-slow shadow-[0_0_15px_rgba(139,92,246,0.8)]"></div>
                     <div>
-                        <h3 class="text-xl font-bold">风险投资机构</h3>
-                        <p>多家知名VC</p>
-                        <p class="text-sm text-gray-300">持股比例: 20%</p>
+                        <h3 class="text-xl font-bold">风险投资评估</h3>
+                        <p>生态搭建--盈亏评估--落地评估</p>
+                        <p class="text-sm text-gray-300">评级：S级长期生态，跟随价值流通。</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-
 
     <script>
+        // 点击音效
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playClickSound() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        // 为所有按钮添加点击音效
+        document.querySelectorAll('button, a').forEach(element => {
+            element.addEventListener('click', playClickSound);
+        });
+
         // 创建星空背景
         function createStars() {
             const starsContainer = document.getElementById('stars');
@@ -622,7 +633,7 @@
         // 创建流星雨效果
         function createMeteors() {
             const meteorsContainer = document.getElementById('meteors');
-            const meteorsCount = 25; // 增加流星雨数量
+            const meteorsCount = 25;
             
             for (let i = 0; i < meteorsCount; i++) {
                 const meteor = document.createElement('div');
@@ -646,7 +657,7 @@
                     meteor.style.animationName = 'meteorDown';
                     // 随机起始位置 - 上半部分更多流星
                     const startX = Math.random() * 100;
-                    const startY = Math.random() * 50; // 主要集中在上半部分
+                    const startY = Math.random() * 50;
                     meteor.style.left = `${startX}%`;
                     meteor.style.top = `${startY}%`;
                     
@@ -660,7 +671,7 @@
                     meteor.style.animationName = 'meteorUp';
                     // 随机起始位置 - 下半部分更多流星
                     const startX = Math.random() * 100;
-                    const startY = 50 + Math.random() * 50; // 主要集中在下半部分
+                    const startY = 50 + Math.random() * 50;
                     meteor.style.left = `${startX}%`;
                     meteor.style.top = `${startY}%`;
                     
@@ -682,7 +693,7 @@
         // 创建棋盘格线条
         function createGrid() {
             const gridContainer = document.getElementById('gridContainer');
-            const gridSize = 40; // 网格大小
+            const gridSize = 40;
             const horizontalLinesCount = Math.ceil(window.innerHeight / gridSize);
             const verticalLinesCount = Math.ceil(window.innerWidth / gridSize);
             
@@ -723,7 +734,6 @@
                     }, 1000);
                 }
             }
-            
             type();
         }
         
@@ -733,47 +743,6 @@
             sound.currentTime = 0;
             sound.play().catch(error => {
                 console.log("音频播放失败:", error);
-            });
-        }
-        
-        // 设置股东进度器功能
-        function setupShareholderProgress() {
-            const progressBtn = document.getElementById('shareholderProgressBtn');
-            const progressModal = document.getElementById('shareholderProgressModal');
-            const closeProgressModal = document.getElementById('closeProgressModal');
-            
-            // 打开进度器模态框
-            progressBtn.addEventListener('click', () => {
-                playSound('sound2'); // 播放音效
-                progressModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-                
-                // 动画效果 - 进度条从0%增长到目标值
-                const progressBars = progressModal.querySelectorAll('.bg-yellow-400, .bg-gradient-to-r');
-                progressBars.forEach(bar => {
-                    const targetWidth = bar.style.width;
-                    bar.style.width = '0%';
-                    setTimeout(() => {
-                        bar.style.transition = 'width 1.5s ease-out';
-                        bar.style.width = targetWidth;
-                    }, 100);
-                });
-            });
-            
-            // 关闭进度器模态框
-            closeProgressModal.addEventListener('click', () => {
-                playSound('sound3'); // 播放音效
-                progressModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-            
-            // 点击模态框背景关闭
-            progressModal.addEventListener('click', (e) => {
-                if (e.target === progressModal || e.target === progressModal.querySelector('.modal-backdrop')) {
-                    playSound('sound3'); // 播放音效
-                    progressModal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
             });
         }
         
@@ -799,8 +768,8 @@
                     data.push({
                         id: i,
                         name: `股东${i}`,
-                        date: `2025-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`,
-                        shares: Math.floor(Math.random() * 1000) + 100
+                        date: `2026/0/0`,
+                        shares: 0
                     });
                 }
                 return data;
@@ -812,29 +781,18 @@
                 const endIndex = Math.min(page * itemsPerPage, totalShareholders);
                 const shareholders = generateShareholderData(startIndex, endIndex);
 
-                const listContainer = document.getElementById('shareholderList');
-                listContainer.innerHTML = '';
+                tableBody.innerHTML = '';
 
                 shareholders.forEach(shareholder => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-black bg-opacity-40 p-4 rounded-lg border border-white border-opacity-20';
-                    card.innerHTML = `
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-white font-bold text-lg">${shareholder.name}</span>
-                            <span class="text-yellow-300 text-sm">#${shareholder.id}</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <p class="text-gray-300">入股时间</p>
-                                <p class="text-white">${shareholder.date}</p>
-                            </div>
-                            <div>
-                                <p class="text-gray-300">股份数量</p>
-                                <p class="text-white font-semibold">${shareholder.shares}</p>
-                            </div>
-                        </div>
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-700 hover:bg-white hover:bg-opacity-10';
+                    row.innerHTML = `
+                        <td class="px-1 py-1">${shareholder.id}</td>
+                        <td class="px-1 py-1">${shareholder.shares}</td>
+                        <td class="px-1 py-1">${shareholder.date}</td>
+                        <td class="px-1 py-1">${shareholder.name}</td>
                     `;
-                    listContainer.appendChild(card);
+                    tableBody.appendChild(row);
                 });
 
                 pageInfo.textContent = `${startIndex} - ${endIndex}`;
@@ -881,22 +839,38 @@
             
             // 股东详情按钮点击事件
             shareholderBtn.addEventListener('click', () => {
-                playSound('sound3'); // 播放叮叮叮叮音效
+                playSound('sound3');
                 shareholderModal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             });
 
+            // 关闭股东详情模态框
+            closeShareholderModal.addEventListener('click', () => {
+                shareholderModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                playSound('sound3');
+            });
+
             // 关于我们按钮点击事件
+            const aboutUsBtn = document.getElementById('aboutUsBtn');
+            const aboutUsModal = document.getElementById('aboutUsModal');
             aboutUsBtn.addEventListener('click', () => {
-                playSound('sound1'); // 播放音效
+                playSound('sound1');
                 aboutUsModal.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             });
-            
-            closeShareholderModal.addEventListener('click', () => {
-                playSound('sound1');
-                shareholderModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
+
+            // 关闭模态框通用事件
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', () => {
+                    const modalId = button.getAttribute('data-modal');
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                        playSound('sound3');
+                    }
+                });
             });
             
             // 点击模态框外部关闭
@@ -953,7 +927,6 @@
             createMeteors();
             createGrid();
             setupShareholderQuery();
-            setupShareholderProgress();
             setupModals();
             setupButtonEffects();
             
@@ -973,5 +946,5 @@
         // 页面加载完成后初始化
         window.addEventListener('DOMContentLoaded', init);
     </script>
-</body>
-</html>
+
+</body></html>
